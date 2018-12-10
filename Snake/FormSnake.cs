@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace Snake
@@ -8,6 +9,10 @@ namespace Snake
         private readonly Game _game;
         private Bitmap _bitmap;
         private readonly Graphics _graphics;
+        private volatile bool isStopped;
+
+        public delegate void MethodShowResults(int scores);
+        public event MethodShowResults OnShowResults;
 
         public const int SquareSide = 30;
 
@@ -18,11 +23,20 @@ namespace Snake
             _graphics = Graphics.FromImage(_bitmap);
             _game = new Game();
             _game.OnDrawGame += DrawGame;
+            _game.OnFinishGame += FinishGame;
             _game.Start();
         }
 
         private void DrawGame()
         {
+            if (isStopped)
+                return;
+            if (InvokeRequired)
+            {
+                Invoke((Action)DrawGame);
+                return;
+            }
+
             DrawField();
             DrawFood();
             DrawSnake();
@@ -81,6 +95,24 @@ namespace Snake
 
             if (_game.CheckChanceMove(movement))
                 _game.Snake.NextMovement = movement;
+        }
+
+        private void FinishGame(int scores)
+        {
+            if (InvokeRequired)
+            {
+                Invoke((Action<int>)FinishGame, scores);
+                return;
+            }
+            Close();
+            OnShowResults(scores);
+        }
+
+        private void FormSnake_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            _game.Timer.Stop();
+            isStopped = true;
+            OnShowResults(_game.Scores);
         }
     }
 }

@@ -5,8 +5,7 @@ namespace Snake
 {
     class Snake
     {
-        public List<Point> Points = new List<Point>();
-        public int Speed { get; set; } = 1;
+        public List<Point> Points { get; set; } = new List<Point>();
         public Movement NextMovement { get; set; } = Movement.Right;
         public Movement PreviousMovement { get; set; }
 

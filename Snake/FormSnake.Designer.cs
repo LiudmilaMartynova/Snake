@@ -55,6 +55,7 @@
             this.Name = "FormSnake";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Snake";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormSnake_FormClosing);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FormSnake_KeyDown);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxGame)).EndInit();
             this.ResumeLayout(false);

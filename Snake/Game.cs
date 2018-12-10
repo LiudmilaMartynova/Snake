@@ -12,9 +12,13 @@ namespace Snake
         public Snake Snake { get; set; }
         public Point Food { get; set; }
         public Timer Timer { get; set; }
+        public int Scores { get; set; }
 
         public delegate void MethodDrawGame();
         public event MethodDrawGame OnDrawGame;
+
+        public delegate void MethodFinishGame(int scores);
+        public event MethodFinishGame OnFinishGame;
 
         public const int FieldWidth = 20;
         public const int FieldHeight = 15;
@@ -30,7 +34,7 @@ namespace Snake
             GenerateSnake();
             GenerateFood();
             OnDrawGame();
-            Timer = new Timer(1000);
+            Timer = new Timer(700);
             Timer.Elapsed += OnTimedMoveSnake;
             Timer.Start();
         }
@@ -103,7 +107,7 @@ namespace Snake
             if (CheckFinishGame(newPoint))
             {
                 Timer.Stop();
-                Environment.Exit(0);
+                OnFinishGame(Scores);
             }
 
             points.Insert(0, newPoint);
@@ -116,6 +120,11 @@ namespace Snake
         {
             if (Snake.Points.First() != Food)
                 return false;
+
+            Scores++;
+            if (Scores != 0 && Scores % 5 == 0)
+                Timer.Interval = Timer.Interval * 0.85;
+
             GenerateFood();
             return true;
         }
